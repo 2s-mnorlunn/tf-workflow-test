@@ -1,4 +1,5 @@
 name: (Prod) TF Apply
+run-name: (Prod) TF Apply
  
 on:
   workflow_dispatch:
