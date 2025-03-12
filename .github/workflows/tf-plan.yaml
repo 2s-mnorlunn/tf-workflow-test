@@ -1,5 +1,4 @@
-name: Run Example Workflow 🏃
-run-name: ${{ github.actor }} has triggered Running a Workflow 🏃
+name: (Prod) TF Plan
  
 on:
   workflow_dispatch:
@@ -10,7 +9,7 @@ env:
   tfVersion: "1.11.1"
 
 jobs:
-  example-summary:
+  plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
