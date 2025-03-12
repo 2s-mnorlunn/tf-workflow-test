@@ -3,14 +3,30 @@ run-name: ${{ github.actor }} has triggered Running a Workflow 🏃
  
 on:
   workflow_dispatch:
+    inputs:
+      tfVersion:
+        type: string
+        description: "(Optional) Defaults to latest TF version. Inputting Semver ranges are supported."
+        required: false
+        default: "1.11.1"
  
 jobs:
   example-summary:
     runs-on: ubuntu-latest
     steps:
-      - name: Terraform Plan for ${{ inputs.terraform_environment }} ✍️
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: ${{ inputs.tfVersion }}
+
+      - name: Terraform Init ✍️
         run: |
-          terraform plan -input=false -var-file="env/${{ inputs.terraform_environment }}/masterdata.tfvars" -parallelism=100 -lock=false -out=tfplan
+          terraform init
+        id: terraform_init
+
+      - name: Terraform Plan ✍️
+        run: |
+          terraform plan -input=false -parallelism=100 -lock=false -out=tfplan
         id: terraform_plan
       
       - name: Output Terraform Plan in Summary 👀
