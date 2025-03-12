@@ -1,4 +1,5 @@
 name: (Production) Terraform Plan & Apply
+run-name: (Production) Terraform Plan & Apply
 
 on:
   push:
