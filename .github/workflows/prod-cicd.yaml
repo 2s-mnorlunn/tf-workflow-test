@@ -1,4 +1,5 @@
 name: (Production) Terraform Plan & Apply
+run-name: ${{ github.actor }} has triggered Running a Workflow 🏃
 
 on:
   push:
@@ -10,4 +11,4 @@ on:
 
 jobs:
   plan:
-    uses: .github/workflows/tf-plan.yaml@tf-plan/v2
+    uses: ./tf-plan.yaml
