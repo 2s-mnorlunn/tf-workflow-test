@@ -1,0 +1,31 @@
+name: Run Example Workflow 🏃
+run-name: ${{ github.actor }} has triggered Running a Workflow 🏃
+ 
+on:
+  workflow_dispatch:
+ 
+jobs:
+  example-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Terraform Plan for ${{ inputs.terraform_environment }} ✍️
+        run: |
+          terraform plan -input=false -var-file="env/${{ inputs.terraform_environment }}/masterdata.tfvars" -parallelism=100 -lock=false -out=tfplan
+        id: terraform_plan
+      
+      - name: Output Terraform Plan in Summary 👀
+        run: |
+          {
+            echo '# Successfully ran Terraform Plan for ${{ inputs.terraform_environment }} :rocket:'
+            echo ''
+            echo '## Workflow Details'
+            echo '- Branch: ${{ github.ref }}'
+            echo '- Commit: ${{ github.sha }}'
+            echo '- Actor: ${{ github.actor }}'
+            echo ''
+            echo '## Terraform Plan'
+            echo '```hcl'
+            terraform show -no-color tfplan
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+        id: terraform_plan_summary
