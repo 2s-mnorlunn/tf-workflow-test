@@ -10,4 +10,9 @@ on:
 
 jobs:
   plan:
+    if: "${{ github.event_name == 'pull_request' }}"
     uses: ./.github/workflows/tf-plan.yaml
+
+  apply:
+    if: "${{ github.ref == 'refs/heads/main' && github.event_name == 'push'}}"
+    uses: ./.github/workflows/tf-apply.yaml
