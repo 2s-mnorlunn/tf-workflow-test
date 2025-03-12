@@ -19,6 +19,16 @@ jobs:
         with:
           terraform_version: ${{ inputs.tfVersion }}
 
+      - name: Current directory
+        run: |
+          pwd
+        id: current_dir
+
+      - name: Current files
+        run: |
+          ls -la
+        id: current_files
+
       - name: Terraform Init ✍️
         run: |
           terraform init
