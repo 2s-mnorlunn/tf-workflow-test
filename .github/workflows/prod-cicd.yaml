@@ -1,0 +1,13 @@
+name: (Production) Terraform Plan & Apply
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  plan:
+    uses: .github/workflows/tf-plan.yaml@tf-plan/v2
