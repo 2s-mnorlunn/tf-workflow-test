@@ -11,4 +11,4 @@ on:
 
 jobs:
   plan:
-    uses: ./tf-plan.yaml
+    uses: ./github/workflows/tf-plan.yaml
