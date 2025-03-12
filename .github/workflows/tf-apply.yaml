@@ -2,21 +2,16 @@ name: Run Example Workflow 🏃
 run-name: ${{ github.actor }} has triggered Running a Workflow 🏃
  
 on:
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
-    inputs:
-      tfVersion:
-        type: string
-        description: "(Optional) Defaults to latest TF version. Inputting Semver ranges are supported."
-        required: false
-        default: "1.11.1"
 
   workflow_call:
-     inputs:
-      tfVersion:
-        type: string
-        description: "(Optional) Defaults to latest TF version. Inputting Semver ranges are supported."
-        required: false
-        default: "1.11.1"
+
+env:
+  tfVersion: "1.11.1"
 
 jobs:
   example-summary:
@@ -28,7 +23,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
         with:
-          terraform_version: ${{ inputs.tfVersion }}
+          terraform_version: $tfVersion
 
       - name: Current directory
         run: |
