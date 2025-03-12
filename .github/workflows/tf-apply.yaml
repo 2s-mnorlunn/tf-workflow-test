@@ -9,7 +9,15 @@ on:
         description: "(Optional) Defaults to latest TF version. Inputting Semver ranges are supported."
         required: false
         default: "1.11.1"
- 
+
+  workflow_call:
+     inputs:
+      tfVersion:
+        type: string
+        description: "(Optional) Defaults to latest TF version. Inputting Semver ranges are supported."
+        required: false
+        default: "1.11.1"
+
 jobs:
   example-summary:
     runs-on: ubuntu-latest
