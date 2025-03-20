@@ -36,27 +36,5 @@ jobs:
           terraform init
         id: terraform_init
 
-      # - name: Terraform Plan ✍️
-      #   run: |
-      #     terraform plan -input=false -parallelism=100 -lock=false -out=tfplan
-      #   id: terraform_plan
-      
-      # - name: Output Terraform Plan in Summary 👀
-      #   run: |
-      #     {
-      #       echo '# Successfully ran Terraform Plan for ${{ inputs.terraform_environment }} :rocket:'
-      #       echo ''
-      #       echo '## Workflow Details'
-      #       echo '- Branch: ${{ github.ref }}'
-      #       echo '- Commit: ${{ github.sha }}'
-      #       echo '- Actor: ${{ github.actor }}'
-      #       echo ''
-      #       echo '## Terraform Plan'
-      #       echo '```hcl'
-      #       terraform show -no-color tfplan
-      #       echo '```'
-      #     } >> $GITHUB_STEP_SUMMARY
-      #   id: terraform_plan_summary
-
       - name: Terraform Apply without varFile specified
         run: terraform apply -input=false -auto-approve
