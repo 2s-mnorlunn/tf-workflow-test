@@ -5,6 +5,11 @@ on:
   workflow_dispatch:
 
   workflow_call:
+    inputs:
+      manuallyTriggered:
+        type: boolean
+        required: false
+        description: "Workflow triggered manually"
 
 env:
   tfVersion: "1.11.1"
@@ -36,5 +41,37 @@ jobs:
           terraform init
         id: terraform_init
 
+      - name: Terraform Plan ✍️
+        run: |
+          terraform plan -input=false -parallelism=100 -lock=false -out=plan.tfplan
+        id: terraform_plan
+      
+      - name: Output Terraform Plan in Summary 👀
+        run: |
+          {
+            echo '# Successfully ran Terraform Plan for ${{ inputs.terraform_environment }} :rocket:'
+            echo ''
+            echo '## Workflow Details'
+            echo '- Branch: ${{ github.ref }}'
+            echo '- Commit: ${{ github.sha }}'
+            echo '- Actor: ${{ github.actor }}'
+            echo ''
+            echo '## Terraform Plan'
+            echo '```hcl'
+            terraform show -no-color tfplan
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+        id: terraform_plan_summary
+
+      - name: Await Manual Approval
+        if: inputs.manuallyTriggered == 'true'
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: 2s-mnorlunn # Replace with GitHub usernames, with the free version you can only have an issue assigned to one username
+          minimum-approvals: 1
+          issue-title: "Manual Approval Required for Terraform Apply"
+          issue-body: "Please approve or deny the deployment."
+
       - name: Terraform Apply without varFile specified
-        run: terraform apply -input=false -auto-approve
+        run: terraform apply -input=false -auto-approve plan.tfplan

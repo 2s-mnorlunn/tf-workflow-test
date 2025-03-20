@@ -38,7 +38,7 @@ jobs:
 
       - name: Terraform Plan ✍️
         run: |
-          terraform plan -input=false -parallelism=100 -lock=false -out=tfplan
+          terraform plan -input=false -parallelism=100 -lock=false -out=plan.tfplan
         id: terraform_plan
       
       - name: Output Terraform Plan in Summary 👀
