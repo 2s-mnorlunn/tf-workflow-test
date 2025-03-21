@@ -51,7 +51,7 @@ jobs:
             echo ''
             echo '## Terraform Plan'
             echo '```hcl'
-            terraform show -no-color tfplan
+            terraform show -no-color plan.tfplan
             echo '```'
           } >> $GITHUB_STEP_SUMMARY
         id: terraform_plan_summary
