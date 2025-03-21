@@ -82,7 +82,7 @@ jobs:
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
-    environment: ${{ inputs.manuallyTriggered && 'tf-manual' || 'tf-automatic' }}
+    environment: 'tf-manual' #${{ inputs.manuallyTriggered && 'tf-manual' || 'tf-automatic' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
