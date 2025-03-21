@@ -2,8 +2,6 @@ name: (Prod) TF Plan
 run-name: (Prod) TF Plan
  
 on:
-  workflow_dispatch:
-
   workflow_call:
 
 env:

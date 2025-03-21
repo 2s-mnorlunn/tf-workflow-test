@@ -2,8 +2,6 @@ name: (Prod) TF Apply
 run-name: (Prod) TF Apply
  
 on:
-  workflow_dispatch:
-
   workflow_call:
     inputs:
       manuallyTriggered:
@@ -94,7 +92,7 @@ jobs:
           approvers: ${{ github.actor }} # Dynamically assigns the issue to the user who triggered the workflow
           minimum-approvals: 1
           issue-title: "Manual Approval Required for Terraform Apply"
-          issue-body: "Please approve or deny the deployment."
+          issue-body: "Please approve or deny the deployment after rewiewing the Terraform Plan in the workflow run summary."
   
   apply:
     needs: [plan, approval]
