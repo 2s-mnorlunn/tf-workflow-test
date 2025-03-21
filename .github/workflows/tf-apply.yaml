@@ -125,8 +125,8 @@ jobs:
           issue-body: "Please approve or deny the deployment."
   
   apply:
-    needs: [plan, approval]
-    # if: ${{ inputs.manuallyTriggered == 'false' || (inputs.manuallyTriggered == 'true' && needs.approval.result == 'success') }}
+    needs: [plan]
+    if: ${{ inputs.manuallyTriggered == 'false' || (inputs.manuallyTriggered == 'true' && needs.approval.result == 'success') }}
     runs-on: ubuntu-latest
     steps:
       - name: Restore Terraform Providers Cache
