@@ -75,14 +75,32 @@ jobs:
           restore-keys: |
             terraform-plan-${{ github.ref_name }}-
 
-  apply:
+  approval:
     needs: plan
+    if: |
+      inputs.manuallyTriggered &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Await Manual Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ github.actor }} # Dynamically assigns the issue to the user who triggered the workflow
+          minimum-approvals: 1
+          issue-title: "Manual Approval Required for Terraform Apply"
+          issue-body: "Please approve or deny the deployment after rewiewing the Terraform Plan in the workflow run summary."
+  
+  apply:
+    needs: [plan, approval]
     if: |
       always() &&
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
-    environment: ${{ inputs.manuallyTriggered && 'tf-manual' || 'tf-automatic' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
