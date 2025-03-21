@@ -22,7 +22,7 @@ permissions:
   contents: read
 
 jobs:
-  init: 
+  plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,7 +36,6 @@ jobs:
       - name: Terraform Init ✍️
         run: |
           terraform init
-        id: terraform_init
 
       - name: Cache Terraform Providers
         uses: actions/cache@v3
@@ -46,34 +45,11 @@ jobs:
             .terraform.lock.hcl
           key: terraform-providers-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            terraform-providers-${{ github.ref_name }}-${{ github.sha }}
-
-  plan:
-    needs: init
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
-        with:
-          terraform_version: ${{ inputs.tfVersion }}
-
-      - name: Restore Terraform Providers Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            .terraform
-            .terraform.lock.hcl
-          key: terraform-providers-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            terraform-providers-${{ github.ref_name }}-${{ github.sha }}
+            terraform-providers-${{ github.ref_name }}-
 
       - name: Terraform Plan ✍️
         run: |
           terraform plan -input=false -parallelism=100 -lock=false -out=plan.tfplan
-        id: terraform_plan
       
       - name: Output Terraform Plan in Summary 👀
         run: |
@@ -92,16 +68,21 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
         id: terraform_plan_summary
 
-      - name: 'Store tfplan artifact'
-        uses: actions/upload-artifact@v4
+      - name: Cache Terraform Plan
+        uses: actions/cache@v3
         with:
-          name: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
-          path: plan.tfplan
-          retention-days: 5
+          path: |
+            plan.tfplan
+          key: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            terraform-plan-${{ github.ref_name }}-
 
   approval:
     needs: plan
-    if: ${{ inputs.manuallyTriggered && success() }}
+    if: |
+      inputs.manuallyTriggered &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -133,10 +114,14 @@ jobs:
           restore-keys: |
             terraform-providers-${{ github.ref_name }}-${{ github.sha }}
 
-      - name: 'Fetch tfplan artifact'
-        uses: actions/download-artifact@v4
+      - name: Restore Terraform Plan Cache
+        uses: actions/cache@v3
         with:
-          name: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
+          path: |
+            plan.tfplan
+          key: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            terraform-plan-${{ github.ref_name }}-
 
       - name: Terraform Apply without varFile specified
         run: terraform apply -input=false -auto-approve plan.tfplan
