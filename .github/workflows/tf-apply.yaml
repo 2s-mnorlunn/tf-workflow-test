@@ -126,7 +126,7 @@ jobs:
   
   apply:
     needs: [plan, approval]
-    if: ${{ inputs.manuallyTriggered == 'false' || (inputs.manuallyTriggered == 'true' && needs.approval.result == 'success') }}
+    # if: ${{ inputs.manuallyTriggered == 'false' || (inputs.manuallyTriggered == 'true' && needs.approval.result == 'success') }}
     runs-on: ubuntu-latest
     steps:
       - name: Restore Terraform Providers Cache
