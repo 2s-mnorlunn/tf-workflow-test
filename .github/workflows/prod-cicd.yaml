@@ -2,12 +2,12 @@ name: (Production) Terraform Plan & Apply
 run-name: (Production) Terraform Plan & Apply
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
   workflow_dispatch:
 
 jobs:

@@ -8,7 +8,7 @@ on:
     inputs:
       manuallyTriggered:
         type: boolean
-        required: false
+        required: true
         description: "Workflow triggered manually"
 
 env:
