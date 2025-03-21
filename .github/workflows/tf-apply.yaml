@@ -8,11 +8,12 @@ on:
     inputs:
       manuallyTriggered:
         type: boolean
-        required: true
+        required: false
+        default: false
         description: "Workflow triggered manually"
       tfVersion:
         type: string
-        required: true
+        required: false
         default: "1.11.2"
         description: "Terraform version to use"
 
