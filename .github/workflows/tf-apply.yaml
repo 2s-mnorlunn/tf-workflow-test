@@ -44,9 +44,9 @@ jobs:
           path: |
             .terraform
             .terraform.lock.hcl
-          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('**/*.tf*') }}
+          key: terraform-providers-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            terraform-${{ inputs.tfVersion }}-
+            terraform-providers-${{ github.ref }}-${{ github.sha }}
 
   plan:
     runs-on: ubuntu-latest
@@ -57,9 +57,9 @@ jobs:
           path: |
             .terraform
             .terraform.lock.hcl
-          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('**/*.tf*') }}
+          key: terraform-providers-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            terraform-${{ inputs.tfVersion }}-
+            terraform-providers-${{ github.ref }}-${{ github.sha }}
 
       - name: Terraform Plan ✍️
         run: |
@@ -88,7 +88,7 @@ jobs:
         with:
           path: |
             plan.tfplan
-          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('plan.tfplan') }}
+          key: terraform-plan-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
             terraform-plan-${{ github.ref }}-${{ github.sha }}
 
@@ -119,16 +119,16 @@ jobs:
           path: |
             .terraform
             .terraform.lock.hcl
-          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('**/*.tf*') }}
+          key: terraform-providers-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            terraform-${{ inputs.tfVersion }}-
+            terraform-providers-${{ github.ref }}-${{ github.sha }}
       
       - name: Restore Terraform Plan
         uses: actions/cache@v3
         with:
           path: |
             plan.tfplan
-          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('plan.tfplan') }}
+          key: terraform-plan-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
             terraform-plan-${{ github.ref }}-${{ github.sha }}
 
