@@ -33,29 +33,34 @@ jobs:
         with:
           terraform_version: ${{ inputs.tfVersion }}
 
-      - name: Output manuallyTriggered input
-        run: |
-          echo "manuallyTriggered: ${{ inputs.manuallyTriggered }}"
-        id: output_manually_triggered
-
-      - name: Current directory
-        run: |
-          pwd
-        id: current_dir
-
-      - name: Current files
-        run: |
-          ls -la
-        id: current_files
-
       - name: Terraform Init ✍️
         run: |
           terraform init
         id: terraform_init
 
+      - name: Cache Terraform Providers
+        uses: actions/cache@v3
+        with:
+          path: |
+            .terraform
+            .terraform.lock.hcl
+          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('**/*.tf*') }}
+          restore-keys: |
+            terraform-${{ inputs.tfVersion }}-
+
   plan:
     runs-on: ubuntu-latest
     steps:
+      - name: Restore Terraform Providers Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            .terraform
+            .terraform.lock.hcl
+          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('**/*.tf*') }}
+          restore-keys: |
+            terraform-${{ inputs.tfVersion }}-
+
       - name: Terraform Plan ✍️
         run: |
           terraform plan -input=false -parallelism=100 -lock=false -out=plan.tfplan
@@ -77,6 +82,15 @@ jobs:
             echo '```'
           } >> $GITHUB_STEP_SUMMARY
         id: terraform_plan_summary
+      
+      - name: Cache Terraform Plan
+        uses: actions/cache@v3
+        with:
+          path: |
+            plan.tfplan
+          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('plan.tfplan') }}
+          restore-keys: |
+            terraform-plan-${{ github.ref }}-${{ github.sha }}
 
   approval:
     needs: plan
@@ -99,5 +113,24 @@ jobs:
     if: ${{ inputs.manuallyTriggered == 'false' || (inputs.manuallyTriggered == 'true' && needs.approval.result == 'success') }}
     runs-on: ubuntu-latest
     steps:
+      - name: Restore Terraform Providers Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            .terraform
+            .terraform.lock.hcl
+          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('**/*.tf*') }}
+          restore-keys: |
+            terraform-${{ inputs.tfVersion }}-
+      
+      - name: Restore Terraform Plan
+        uses: actions/cache@v3
+        with:
+          path: |
+            plan.tfplan
+          key: terraform-${{ inputs.tfVersion }}-${{ hashFiles('plan.tfplan') }}
+          restore-keys: |
+            terraform-plan-${{ github.ref }}-${{ github.sha }}
+
       - name: Terraform Apply without varFile specified
         run: terraform apply -input=false -auto-approve plan.tfplan
