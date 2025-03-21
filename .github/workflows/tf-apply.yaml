@@ -44,9 +44,9 @@ jobs:
           path: |
             .terraform
             .terraform.lock.hcl
-          key: terraform-providers-${{ github.ref }}-${{ github.sha }}
+          key: terraform-providers-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            terraform-providers-${{ github.ref }}-${{ github.sha }}
+            terraform-providers-${{ github.ref_name }}-${{ github.sha }}
 
   plan:
     needs: init
@@ -66,9 +66,9 @@ jobs:
           path: |
             .terraform
             .terraform.lock.hcl
-          key: terraform-providers-${{ github.ref }}-${{ github.sha }}
+          key: terraform-providers-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            terraform-providers-${{ github.ref }}-${{ github.sha }}
+            terraform-providers-${{ github.ref_name }}-${{ github.sha }}
 
       - name: Terraform Plan ✍️
         run: |
@@ -81,7 +81,7 @@ jobs:
             echo '# Successfully ran Terraform Plan for ${{ inputs.terraform_environment }} :rocket:'
             echo ''
             echo '## Workflow Details'
-            echo '- Branch: ${{ github.ref }}'
+            echo '- Branch: ${{ github.ref_name }}'
             echo '- Commit: ${{ github.sha }}'
             echo '- Actor: ${{ github.actor }}'
             echo ''
@@ -97,14 +97,14 @@ jobs:
       #   with:
       #     path: |
       #       plan.tfplan
-      #     key: terraform-plan-${{ github.ref }}-${{ github.sha }}
+      #     key: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
       #     restore-keys: |
-      #       terraform-plan-${{ github.ref }}-${{ github.sha }}
+      #       terraform-plan-${{ github.ref_name }}-${{ github.sha }}
 
       - name: 'Store tfplan artifact'
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-plan-${{ github.ref }}-${{ github.sha }}
+          name: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
           path: plan.tfplan
           retention-days: 5
 
@@ -135,23 +135,23 @@ jobs:
           path: |
             .terraform
             .terraform.lock.hcl
-          key: terraform-providers-${{ github.ref }}-${{ github.sha }}
+          key: terraform-providers-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            terraform-providers-${{ github.ref }}-${{ github.sha }}
+            terraform-providers-${{ github.ref_name }}-${{ github.sha }}
       
       # - name: Restore Terraform Plan
       #   uses: actions/cache@v3
       #   with:
       #     path: |
       #       plan.tfplan
-      #     key: terraform-plan-${{ github.ref }}-${{ github.sha }}
+      #     key: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
       #     restore-keys: |
-      #       terraform-plan-${{ github.ref }}-${{ github.sha }}
+      #       terraform-plan-${{ github.ref_name }}-${{ github.sha }}
 
       - name: 'Fetch tfplan artifact'
         uses: actions/download-artifact@v4
         with:
-          name: terraform-plan-${{ github.ref }}-${{ github.sha }}
+          name: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
 
       - name: Terraform Apply without varFile specified
         run: terraform apply -input=false -auto-approve plan.tfplan
