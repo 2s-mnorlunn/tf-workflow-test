@@ -49,6 +49,7 @@ jobs:
             terraform-providers-${{ github.ref }}-${{ github.sha }}
 
   plan:
+    needs: init
     runs-on: ubuntu-latest
     steps:
       - name: Restore Terraform Providers Cache
