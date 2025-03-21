@@ -91,15 +91,6 @@ jobs:
             echo '```'
           } >> $GITHUB_STEP_SUMMARY
         id: terraform_plan_summary
-      
-      # - name: Cache Terraform Plan
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       plan.tfplan
-      #     key: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
-      #     restore-keys: |
-      #       terraform-plan-${{ github.ref_name }}-${{ github.sha }}
 
       - name: 'Store tfplan artifact'
         uses: actions/upload-artifact@v4
@@ -110,7 +101,7 @@ jobs:
 
   approval:
     needs: plan
-    if: inputs.manuallyTriggered
+    if: ${{ inputs.manuallyTriggered && success() }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -126,7 +117,10 @@ jobs:
   
   apply:
     needs: [plan, approval]
-    # if: ${{ !inputs.manuallyTriggered || (inputs.manuallyTriggered && needs.approval.result == 'success') }}
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     steps:
       - name: Restore Terraform Providers Cache
@@ -138,15 +132,6 @@ jobs:
           key: terraform-providers-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
             terraform-providers-${{ github.ref_name }}-${{ github.sha }}
-      
-      # - name: Restore Terraform Plan
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       plan.tfplan
-      #     key: terraform-plan-${{ github.ref_name }}-${{ github.sha }}
-      #     restore-keys: |
-      #       terraform-plan-${{ github.ref_name }}-${{ github.sha }}
 
       - name: 'Fetch tfplan artifact'
         uses: actions/download-artifact@v4
