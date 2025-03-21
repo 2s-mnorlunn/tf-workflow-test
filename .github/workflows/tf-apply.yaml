@@ -15,7 +15,7 @@ env:
   tfVersion: "1.11.1"
 
 jobs:
-  apply:
+  init: 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,6 +46,9 @@ jobs:
           terraform init
         id: terraform_init
 
+  plan:
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Plan ✍️
         run: |
           terraform plan -input=false -parallelism=100 -lock=false -out=plan.tfplan
@@ -68,8 +71,13 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
         id: terraform_plan_summary
 
+  approval:
+    if: inputs.manuallyTriggered
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
       - name: Await Manual Approval
-        if: inputs.manuallyTriggered
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
@@ -77,6 +85,9 @@ jobs:
           minimum-approvals: 1
           issue-title: "Manual Approval Required for Terraform Apply"
           issue-body: "Please approve or deny the deployment."
-
+  
+  apply:
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Apply without varFile specified
         run: terraform apply -input=false -auto-approve plan.tfplan
