@@ -81,7 +81,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: 2s-mnorlunn # Replace with GitHub usernames, with the free version you can only have an issue assigned to one username
+          approvers: ${{ github.actor }} # Dynamically assigns the issue to the user who triggered the workflow
           minimum-approvals: 1
           issue-title: "Manual Approval Required for Terraform Apply"
           issue-body: "Please approve or deny the deployment."
