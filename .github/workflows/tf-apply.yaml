@@ -15,10 +15,6 @@ on:
         default: "1.11.2"
         description: "Terraform version to use"
 
-permissions:
-  issues: write
-  contents: read
-
 env:
   tfEnv: ${{ inputs.manuallyTriggered && 'tf-manual' || 'tf-auto' }}
 
@@ -80,10 +76,6 @@ jobs:
 
   apply:
     needs: plan
-    if: |
-      always() &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     environment: 
       name: ${{ inputs.manuallyTriggered && 'tf-manual' || 'tf-auto' }}
