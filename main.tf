@@ -1,4 +1,4 @@
 resource "random_integer" "priority" {
   min = 1
-  max = 2999
+  max = 2998
 }
