@@ -78,7 +78,7 @@ jobs:
     needs: plan
     runs-on: ubuntu-latest
     environment: 
-      name: ${{ inputs.manuallyTriggered && 'tf-manual' || 'tf-auto' }}
+      name: ${{ inputs.manuallyTriggered && 'tf-manual' || null }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
